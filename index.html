@@ -152,7 +152,7 @@ h2{font-size:clamp(1.7rem,3.4vw,2.3rem);font-weight:700;letter-spacing:-.01em;ma
 .fact b{color:var(--muted);font-weight:500}
 
 /* ---------- Counters ---------- */
-.counters{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:44px}
+.counters{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:44px}
 .counter{text-align:center;padding:30px 14px}
 .counter .num{
   font-size:2.4rem;font-weight:800;letter-spacing:-.02em;
@@ -192,6 +192,36 @@ h2{font-size:clamp(1.7rem,3.4vw,2.3rem);font-weight:700;letter-spacing:-.01em;ma
 .proj .stack{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px}
 .proj .stack span{font-size:.75rem;font-family:'JetBrains Mono',monospace;color:var(--accent);background:rgba(76,201,240,.08);padding:4px 10px;border-radius:6px}
 
+/* ---------- Certificates ---------- */
+.cert-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px}
+.cert{padding:0;overflow:hidden;text-align:left;cursor:pointer;font:inherit;color:inherit;display:flex;flex-direction:column}
+.cert .thumb{aspect-ratio:4/3;overflow:hidden;border-bottom:1px solid var(--border);background:var(--bg-soft)}
+.cert .thumb img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;transition:transform .5s}
+.cert:hover .thumb img{transform:scale(1.06)}
+.cert-body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:6px;flex:1}
+.cert-issuer{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--accent);letter-spacing:.05em;text-transform:uppercase}
+.cert-title{font-size:1.02rem;line-height:1.35}
+.cert-date{color:var(--muted);font-size:.83rem}
+.cert .view{margin-top:auto;padding-top:10px;font-family:'JetBrains Mono',monospace;font-size:.78rem;color:var(--muted);transition:color .2s}
+.cert:hover .view{color:var(--accent)}
+
+/* ---------- Certificate modal ---------- */
+.cert-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;padding:20px;visibility:hidden;opacity:0;transition:opacity .3s,visibility .3s}
+.cert-modal.open{visibility:visible;opacity:1}
+.cert-backdrop{position:absolute;inset:0;background:rgba(4,6,10,.8);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.cert-dialog{position:relative;max-width:860px;width:100%;max-height:90vh;overflow-y:auto;padding:0;transform:translateY(24px) scale(.97);transition:transform .35s cubic-bezier(.2,.65,.3,1)}
+.cert-modal.open .cert-dialog{transform:none}
+.cert-dialog img{width:100%;display:block;border-bottom:1px solid var(--border)}
+.cert-modal-body{padding:22px 26px 26px}
+.cert-title{font-size:1.02rem;line-height:1.35}
+.cert-modal-body .cert-date{margin-bottom:14px}
+.cert-modal-body .chips{margin-bottom:14px}
+.cert-modal-body .chips .chip{opacity:1;transform:none}
+.cert-note{color:var(--muted);font-size:.92rem}
+.cert-close{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:rgba(13,18,25,.85);color:var(--text);font-size:1.2rem;cursor:pointer;z-index:2;transition:border-color .2s,color .2s}
+.cert-close:hover{border-color:var(--accent);color:var(--accent)}
+body.modal-open{overflow:hidden}
+
 /* ---------- Contact ---------- */
 .contact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px}
 .contact-card{text-align:center;padding:36px 20px}
@@ -216,7 +246,8 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;color
 
 /* ---------- Mobile ---------- */
 @media(max-width:860px){
-  .about-grid,.skill-cols,.proj-grid,.contact-grid,.counters{grid-template-columns:1fr}
+  .about-grid,.skill-cols,.proj-grid,.contact-grid,.counters,.cert-grid{grid-template-columns:1fr}
+  .cert-dialog{max-height:92vh}
   .nav-links{
     position:fixed;top:66px;right:0;left:0;
     flex-direction:column;background:rgba(13,18,25,.97);
@@ -250,6 +281,7 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;color
       <li><a href="#about" data-sec="about">About</a></li>
       <li><a href="#skills" data-sec="skills">Skills</a></li>
       <li><a href="#projects" data-sec="projects">Projects</a></li>
+      <li><a href="#certificates" data-sec="certificates">Certificates</a></li>
       <li><a href="#contact" data-sec="contact">Contact</a></li>
     </ul>
   </div>
@@ -295,6 +327,7 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;color
       <div class="card counter reveal"><div class="num" data-count="7">0</div><div class="lbl">Projects built</div></div>
       <div class="card counter reveal"><div class="num" data-count="15" data-suffix="+">0</div><div class="lbl">Technologies &amp; tools</div></div>
       <div class="card counter reveal"><div class="num" data-count="2">0</div><div class="lbl">Spring Boot REST APIs</div></div>
+      <div class="card counter reveal"><div class="num" data-count="12">0</div><div class="lbl">Certificates earned</div></div>
     </div>
   </div>
 </section>
@@ -397,6 +430,142 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;color
   </div>
 </section>
 
+<!-- ============ CERTIFICATES ============
+     EDIT ME: to add a certificate, copy one <button class="card cert"> block,
+     change the image path, data attributes and card text, and add the
+     certificate image to the /certs folder.
+     ============================================================ -->
+<section id="certificates">
+  <div class="wrap">
+    <p class="sec-label">// certificates</p>
+    <h2>Certificates &amp; courses</h2>
+    <p class="lead">Completed programs and courses. Click any card to view the certificate.</p>
+    <div class="cert-grid">
+
+      <button type="button" class="card cert reveal" data-img="certs/depi-data-analyst.jpg" data-title="Data Analyst Specialist" data-issuer="Digital Egypt Pioneers Program · Ministry of Communications &amp; IT" data-date="November 2025 – July 2026" data-skills="Data Analysis|SQL|Python|Excel|Power BI" data-note="National program sponsored by Egypt's Ministry of Communications and Information Technology. Completed the Data Analyst Specialist track, with practical work in data preparation, analysis and dashboard development.">
+        <span class="thumb"><img src="certs/depi-data-analyst.jpg" alt="DEPI Data Analyst Specialist certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">DEPI · MCIT</span>
+          <span class="cert-title">Data Analyst Specialist</span>
+          <span class="cert-date">Nov 2025 – Jul 2026</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/innovegypt.jpg" data-title="Innovegypt Program" data-issuer="ITIDA · TIEC" data-date="45-hour training program" data-skills="Innovation|Entrepreneurship|Project work" data-note="Certificate of acknowledgement: completed a 45-hour training course and developed a final project for a potential startup.">
+        <span class="thumb"><img src="certs/innovegypt.jpg" alt="Innovegypt program certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">ITIDA · TIEC</span>
+          <span class="cert-title">Innovegypt Program</span>
+          <span class="cert-date">45-hour training</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/ibm-collaborate.jpg" data-title="Collaborate Effectively for Professional Success" data-issuer="IBM · Coursera" data-date="November 2026" data-skills="Collaboration|Professional communication" data-note="Online course authorized by IBM and offered through Coursera. Verified at coursera.org/verify/4GOTODS0CMX8.">
+        <span class="thumb"><img src="certs/ibm-collaborate.jpg" alt="IBM Collaborate Effectively for Professional Success certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">IBM · Coursera</span>
+          <span class="cert-title">Collaborate Effectively for Professional Success</span>
+          <span class="cert-date">Nov 2026</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/devhub-data-structures.jpg" data-title="Advanced Data Structure" data-issuer="DevHub · Badr University in Assiut" data-date="October 2026 · Score 96%" data-skills="Data Structures" data-note="Delivered by DevHub in collaboration with Badr University in Assiut. Certificate ID CERT-2026-G1F8V0.">
+        <span class="thumb"><img src="certs/devhub-data-structures.jpg" alt="DevHub Advanced Data Structure certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">DevHub · Badr University</span>
+          <span class="cert-title">Advanced Data Structure</span>
+          <span class="cert-date">Oct 2026 · 96%</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/edraak-advanced-excel.jpg" data-title="Advanced Excel" data-issuer="Edraak" data-date="March 2026" data-skills="Microsoft Excel|Reports|Charts" data-note="Specialized and conditional formats, building reports, controlling cells through functions, and charts. Three hours of interactive training.">
+        <span class="thumb"><img src="certs/edraak-advanced-excel.jpg" alt="Edraak Advanced Excel certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">Edraak</span>
+          <span class="cert-title">Advanced Excel</span>
+          <span class="cert-date">Mar 2026</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/ll-power-bi.jpg" data-title="Getting Started with Power BI" data-issuer="LinkedIn Learning" data-date="January 2026" data-skills="Microsoft Power BI" data-note="">
+        <span class="thumb"><img src="certs/ll-power-bi.jpg" alt="Getting Started with Power BI certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">LinkedIn Learning</span>
+          <span class="cert-title">Getting Started with Power BI</span>
+          <span class="cert-date">Jan 2026</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/ll-sql-data-analysis.jpg" data-title="SQL for Data Analysis" data-issuer="LinkedIn Learning" data-date="January 2026" data-skills="Data Analysis|SQL" data-note="">
+        <span class="thumb"><img src="certs/ll-sql-data-analysis.jpg" alt="SQL for Data Analysis certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">LinkedIn Learning</span>
+          <span class="cert-title">SQL for Data Analysis</span>
+          <span class="cert-date">Jan 2026</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/ll-dp900-exam-tips.jpg" data-title="Microsoft Azure Data Fundamentals (DP-900) Exam Tips" data-issuer="LinkedIn Learning" data-date="January 2026" data-skills="Microsoft Azure|Data Warehousing" data-note="Course completion certificate for an exam-preparation course.">
+        <span class="thumb"><img src="certs/ll-dp900-exam-tips.jpg" alt="DP-900 Exam Tips course completion certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">LinkedIn Learning</span>
+          <span class="cert-title">Azure Data Fundamentals (DP-900) Exam Tips</span>
+          <span class="cert-date">Jan 2026</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/stj-communication-skills.jpg" data-title="Communication Skills" data-issuer="STJ Egypt" data-date="January 2026" data-skills="Communication|Teamwork" data-note="Effective communication fundamentals: listening, expressing ideas clearly, and professional conduct in a work environment.">
+        <span class="thumb"><img src="certs/stj-communication-skills.jpg" alt="STJ Egypt Communication Skills certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">STJ Egypt</span>
+          <span class="cert-title">Communication Skills</span>
+          <span class="cert-date">Jan 2026</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/depi-business-english.jpg" data-title="Business English (Round 4)" data-issuer="Digital Egypt Pioneers Initiative · SYE English Community" data-date="November 2025 – July 2026" data-skills="Business English" data-note="Round 4 of the Business English Track of the Digital Egypt Pioneers Initiative, delivered by SYE English Community.">
+        <span class="thumb"><img src="certs/depi-business-english.jpg" alt="DEPI Business English certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">DEPI · SYE English</span>
+          <span class="cert-title">Business English (Round 4)</span>
+          <span class="cert-date">Nov 2025 – Jul 2026</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/pa-database-level1-sql.jpg" data-title="Database Level 1 — SQL (Concepts and Practice)" data-issuer="ProgrammingAdvices" data-date="December 2025" data-skills="SQL|Databases" data-note="">
+        <span class="thumb"><img src="certs/pa-database-level1-sql.jpg" alt="Database Level 1 SQL certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">ProgrammingAdvices</span>
+          <span class="cert-title">Database Level 1 — SQL</span>
+          <span class="cert-date">Dec 2025</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+      <button type="button" class="card cert reveal" data-img="certs/pa-cpp-level1.jpg" data-title="Programming Using C++ — Level 1" data-issuer="ProgrammingAdvices" data-date="October 2025" data-skills="C++|Programming fundamentals" data-note="">
+        <span class="thumb"><img src="certs/pa-cpp-level1.jpg" alt="Programming Using C++ Level 1 certificate" loading="lazy"></span>
+        <span class="cert-body">
+          <span class="cert-issuer">ProgrammingAdvices</span>
+          <span class="cert-title">Programming Using C++ — Level 1</span>
+          <span class="cert-date">Oct 2025</span>
+          <span class="view">view certificate ↗</span>
+        </span>
+      </button>
+
+    </div>
+  </div>
+</section>
+
 <!-- ============ CONTACT ============ -->
 <section id="contact" style="background:var(--bg-soft)">
   <div class="wrap">
@@ -429,11 +598,70 @@ footer{border-top:1px solid var(--border);padding:32px 0;text-align:center;color
 
 <button id="toTop" aria-label="Back to top">↑</button>
 
+<!-- ============ CERTIFICATE MODAL ============ -->
+<div class="cert-modal" id="certModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="certTitle">
+  <div class="cert-backdrop" data-close></div>
+  <div class="card cert-dialog">
+    <button type="button" class="cert-close" id="certClose" aria-label="Close">×</button>
+    <img id="certImg" src="" alt="">
+    <div class="cert-modal-body">
+      <p class="cert-issuer" id="certIssuer"></p>
+      <span class="cert-title" id="certTitle" style="display:block;font-size:1.25rem;margin:6px 0 4px"></span>
+      <p class="cert-date" id="certDate"></p>
+      <div class="chips" id="certSkills"></div>
+      <p class="cert-note" id="certNote"></p>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
 "use strict";
 var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var touch = window.matchMedia('(hover: none)').matches;
+
+/* Certificates modal */
+var certModal = document.getElementById('certModal'),
+    certImg = document.getElementById('certImg'),
+    certTitle = document.getElementById('certTitle'),
+    certIssuer = document.getElementById('certIssuer'),
+    certDate = document.getElementById('certDate'),
+    certSkills = document.getElementById('certSkills'),
+    certNote = document.getElementById('certNote'),
+    certClose = document.getElementById('certClose'),
+    lastFocus = null;
+function openCert(card){
+  lastFocus = card;
+  certImg.src = card.dataset.img;
+  certImg.alt = card.dataset.title + ' certificate';
+  certTitle.textContent = card.dataset.title;
+  certIssuer.textContent = card.dataset.issuer;
+  certDate.textContent = card.dataset.date;
+  certSkills.innerHTML = '';
+  (card.dataset.skills || '').split('|').forEach(function(s){
+    if(!s) return;
+    var c = document.createElement('span'); c.className = 'chip'; c.textContent = s;
+    certSkills.appendChild(c);
+  });
+  var note = card.dataset.note || '';
+  certNote.textContent = note; certNote.style.display = note ? '' : 'none';
+  certModal.classList.add('open'); certModal.setAttribute('aria-hidden','false');
+  document.body.classList.add('modal-open');
+  certClose.focus();
+}
+function closeCert(){
+  certModal.classList.remove('open'); certModal.setAttribute('aria-hidden','true');
+  document.body.classList.remove('modal-open');
+  if(lastFocus) lastFocus.focus();
+}
+document.querySelectorAll('.cert').forEach(function(card){
+  card.addEventListener('click', function(){ openCert(card); });
+});
+certClose.addEventListener('click', closeCert);
+certModal.querySelector('.cert-backdrop').addEventListener('click', closeCert);
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && certModal.classList.contains('open')) closeCert();
+});
 
 /* Footer year */
 document.getElementById('year').textContent = new Date().getFullYear();
@@ -589,3 +817,4 @@ if(!reduced){
 </script>
 </body>
 </html>
+
